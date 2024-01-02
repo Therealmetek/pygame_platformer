@@ -1,0 +1,109 @@
+import pygame
+import time
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+DISPLAY_SURF = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+lava_pit_sprite2 = pygame.Rect((400, 600, 150, 50))
+sprite1 = pygame.Rect((0, 600, 1375, 50))
+player1 = pygame.Rect((4, 255, 50, 50))
+lava_pit_sprite = pygame.Rect((250, 600, 150, 50))
+
+pygame.display.set_caption("square game")
+
+rgb1 = 255
+rgb2 = 255
+rgb3 = 0
+explosion_group = pygame.sprite.Group()
+cor = 0
+
+
+# <rect(246, 220, 50, 50)>
+# [2,3
+
+
+def jump():
+    player1.move_ip(0, -175)
+    time.sleep(0.2)
+
+
+death = 0
+level = 1
+jumps = 0
+run = True
+while run:
+
+    explosion_group.draw(screen)
+    explosion_group.update()
+
+    screen.fill((0, 112, 112))
+
+    if level == 1:
+        lava_pit_sprite = pygame.Rect((500, 600, 300, 50))
+        pygame.draw.rect(screen, (0, 255, 0), sprite1)
+        pygame.draw.rect(screen, (255, 0, 0), lava_pit_sprite)
+    pygame.draw.rect(screen, (rgb1, rgb2, rgb3), player1)
+    if level == 2:
+        lava_pit_sprite = pygame.Rect((400, 600, 300, 50))
+        lava_pit_sprite2 = pygame.Rect((800, 600, 300, 50))
+        pygame.draw.rect(screen, (0, 255, 0), sprite1)
+        pygame.draw.rect(screen, (255, 0, 0), lava_pit_sprite2)
+        pygame.draw.rect(screen, (255, 0, 0), lava_pit_sprite)
+    if level == 3:
+        wall = pygame.Rect((300, 100, 100, 500))
+        lava_pit_sprite = pygame.Rect((400, 600, 800, 50))
+        pygame.draw.rect(screen, (0, 0, 255), wall)
+        pygame.draw.rect(screen, (0, 255, 0), sprite1)
+        pygame.draw.rect(screen, (255, 0, 0), lava_pit_sprite)
+
+    if level == 4:
+        run = False
+    crd = list(player1)
+    ck = crd[0] + crd[3]
+    key = pygame.key.get_pressed()
+    if crd[1] == 550:
+        jumps = 0
+    if crd[1] >= 5:
+        player1.move_ip(0, 1)
+    if key[pygame.K_a]:
+        player1.move_ip(-1, 0)
+    if key[pygame.K_d]:
+        player1.move_ip(1, 0)
+    if key[pygame.K_r]:
+        level = 1
+    if key[pygame.K_w] and crd[1] >= 0 and jumps <= 1:
+        jump()
+        jumps = jumps + 1
+    elif key[pygame.K_DOWN]:
+        player1.inflate_ip(-1, -1)
+    elif key[pygame.K_UP]:
+        player1.inflate_ip(1, 1)
+    if [crd[0]] <= [4]:
+        player1.move_ip(1, 0)
+    if [crd[0]] >= [1375]:
+        level = level + 1
+        player1 = pygame.Rect((0, 550, 50, 50))
+    if [crd[1]] <= [4]:
+        player1.move_ip(0, 1)
+    if [crd[1]] >= [550]:
+        player1.move_ip(0, -1)
+    if [crd[1]] >= [550] and [500] <= [crd[0]] <= [800] and level == 1:
+        player1 = pygame.Rect((0, 500, 50, 50))
+        death = death + 1
+    if [crd[1]] >= [550] and [400] <= [crd[0]] <= [600] and level == 2 or [crd[1]] >= [550] and [800] <= [crd[0]] <= [1100] and level == 2:
+        player1 = pygame.Rect((0, 500, 50, 50))
+        death = death + 1
+    if [crd[1]] >= [550] and [400] <= [crd[0]] <= [1200] and level == 3:
+        player1 = pygame.Rect((0, 500, 50, 50))
+        death = death + 1
+    if [300] <= [crd[0]] <= [400] and level == 3 and [crd[1]] >= [50] or 300 <= ck <= 400 and level == 3 and [crd[1]] >= [50]:
+        player1.move_ip(0, -2)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT or key[pygame.K_p]:
+            run = False
+    pygame.display.update()
+pygame.quit()
+print(death)
